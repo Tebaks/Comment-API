@@ -17,6 +17,10 @@ func main() {
 
 	sm := mux.NewRouter()
 
+	getRouter := sm.Methods(http.MethodGet).Subrouter()
+
+	postRouter := sm.Methods(http.MethodPost).Subrouter()
+
 	s := http.Server{
 		Addr:         ":9090",           // configure the bind address
 		Handler:      sm,                // set the default handler
