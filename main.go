@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/Comment-API/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -17,9 +18,14 @@ func main() {
 
 	sm := mux.NewRouter()
 
+	ch := handlers.NewComments(l)
+
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
+	getRouter.HandleFunc("/", ch.GetComments)
 
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
+	postRouter.HandleFunc("/", ch.AddComment)
+	postRouter.Use(ch.MiddlewareValidateComment)
 
 	s := http.Server{
 		Addr:         ":9090",           // configure the bind address

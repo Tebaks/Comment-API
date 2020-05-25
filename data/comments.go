@@ -21,12 +21,12 @@ func (c *Comment) FromJSON(r io.Reader) error {
 	return e.Decode(c)
 }
 
-func (c *Comment) ToJSON(w io.Writer) error {
+type Comments []*Comment
+
+func (c *Comments) ToJSON(w io.Writer) error {
 	e := json.NewEncoder(w)
 	return e.Encode(c)
 }
-
-type Comments []*Comment
 
 func GetComments() Comments {
 	return commentList
@@ -42,6 +42,11 @@ func findComment(id int) (*Comment, int, error) {
 	}
 
 	return nil, -1, ErrCommentNotFound
+}
+
+func AddComment(c *Comment) {
+	c.ID = getNextID()
+	commentList = append(commentList, c)
 }
 
 func getNextID() int {
