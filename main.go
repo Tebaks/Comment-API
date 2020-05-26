@@ -8,6 +8,8 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/Comment-API/data"
+
 	"github.com/Comment-API/config"
 	"github.com/Comment-API/handlers"
 	"github.com/gorilla/mux"
@@ -15,6 +17,8 @@ import (
 
 func main() {
 	config.ReadConfig()
+
+	data.DatabaseConnection()
 
 	l := log.New(os.Stdout, "comments-api ", log.LstdFlags)
 
@@ -39,7 +43,7 @@ func main() {
 	}
 
 	go func() {
-		l.Println("Starting server")
+		l.Println("Starting server...")
 
 		err := s.ListenAndServe()
 		if err != nil {

@@ -12,6 +12,7 @@ import (
 // Comment defines the structure for an API comment
 type Comment struct {
 	ID        int    `json:"id"`
+	PostID    int    `json:"postId" validate:"required"`
 	Author    string `json:"author" validate:"required"`
 	Text      string `json:"text" validate:"required"`
 	CreatedOn string `json:"-"`
