@@ -5,15 +5,23 @@ import (
 	"fmt"
 	"io"
 	"time"
+
+	"github.com/go-playground/validator"
 )
 
 // Comment defines the structure for an API comment
 type Comment struct {
 	ID        int    `json:"id"`
-	Author    string `json:"author"`
-	Text      string `json:"text"`
+	Author    string `json:"author" validate:"required"`
+	Text      string `json:"text" validate:"required"`
 	CreatedOn string `json:"-"`
 	DeletedOn string `json:"-"`
+}
+
+func (c *Comment) Validate() error {
+	validate := validator.New()
+
+	return validate.Struct(c)
 }
 
 func (c *Comment) FromJSON(r io.Reader) error {

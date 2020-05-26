@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -45,6 +46,17 @@ func (c Comments) MiddlewareValidateComment(next http.Handler) http.Handler {
 		if err != nil {
 			c.l.Println("[ERROR] deserializing comment", err)
 			http.Error(rw, "Error reading comment", http.StatusBadRequest)
+			return
+		}
+
+		err = comment.Validate()
+		if err != nil {
+			c.l.Println("[ERROR] validating comment ", err)
+			http.Error(
+				rw,
+				fmt.Sprintf("Error validating comment: %s", err),
+				http.StatusBadRequest,
+			)
 			return
 		}
 
