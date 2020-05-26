@@ -8,11 +8,13 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/Comment-API/config"
 	"github.com/Comment-API/handlers"
 	"github.com/gorilla/mux"
 )
 
 func main() {
+	config.ReadConfig()
 
 	l := log.New(os.Stdout, "comments-api ", log.LstdFlags)
 
@@ -28,16 +30,16 @@ func main() {
 	postRouter.Use(ch.MiddlewareValidateComment)
 
 	s := http.Server{
-		Addr:         ":9090",           // configure the bind address
-		Handler:      sm,                // set the default handler
-		ErrorLog:     l,                 // set the logger for the server
-		ReadTimeout:  5 * time.Second,   // max time to read request from the client
-		WriteTimeout: 10 * time.Second,  // max time to write response to the client
-		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
+		Addr:         config.C.Server.Address, // configure the bind address
+		Handler:      sm,                      // set the default handler
+		ErrorLog:     l,                       // set the logger for the server
+		ReadTimeout:  5 * time.Second,         // max time to read request from the client
+		WriteTimeout: 10 * time.Second,        // max time to write response to the client
+		IdleTimeout:  120 * time.Second,       // max time for connections using TCP Keep-Alive
 	}
 
 	go func() {
-		l.Println("Starting server on port 9090")
+		l.Println("Starting server")
 
 		err := s.ListenAndServe()
 		if err != nil {
