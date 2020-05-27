@@ -43,11 +43,9 @@ func (c *Comments) ToJSON(w io.Writer) error {
 	return e.Encode(c)
 }
 
-// GetComments : Find every comment in database
-func GetComments() Comments {
-	var results []*Comment
-
-	cur, err := Collection.Find(context.TODO(), bson.D{{}})
+func FindComments(postId int) Comments {
+	var results Comments
+	cur, err := Collection.Find(context.TODO(), bson.D{{"postid", postId}})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,6 +67,13 @@ func GetComments() Comments {
 	cur.Close(context.TODO())
 
 	return results
+}
+
+// GetComments : Find every comment in database
+func GetComments(postID int) Comments {
+	comments := FindComments(postID)
+
+	return comments
 }
 
 // AddComment : Add comment to database

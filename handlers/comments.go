@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/Comment-API/data"
+	"github.com/gorilla/mux"
 )
 
 type Comments struct {
@@ -18,11 +20,18 @@ func NewComments(l *log.Logger) *Comments {
 }
 
 func (c *Comments) GetComments(rw http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	postId, err := strconv.Atoi(vars["postId"])
+	if err != nil {
+		http.Error(rw, "Unable to convert id", http.StatusBadRequest)
+		return
+	}
+
 	c.l.Println("Handle GET Comments")
 
-	cl := data.GetComments()
+	cl := data.GetComments(postId)
 
-	err := cl.ToJSON(rw)
+	err = cl.ToJSON(rw)
 
 	if err != nil {
 		http.Error(rw, "Unable to marshall json", http.StatusInternalServerError)

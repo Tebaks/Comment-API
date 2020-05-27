@@ -27,7 +27,7 @@ func main() {
 	ch := handlers.NewComments(l)
 
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/", ch.GetComments)
+	getRouter.HandleFunc("/{postId:[0-9]+}", ch.GetComments)
 
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
 	postRouter.HandleFunc("/", ch.AddComment)
