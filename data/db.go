@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// Collection of comments
 var Collection *mongo.Collection
 
 // DatabaseConnection :
