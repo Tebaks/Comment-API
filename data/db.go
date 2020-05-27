@@ -10,6 +10,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+var Collection *mongo.Collection
+
 // DatabaseConnection :
 func DatabaseConnection() {
 	fmt.Println("Connected to Database!")
@@ -24,8 +26,6 @@ func DatabaseConnection() {
 		log.Fatal(err)
 	}
 
-	Collection := client.Database("comment_api").Collection("comments")
-
-	fmt.Println(Collection)
+	Collection = client.Database(config.C.Database.DBName).Collection("comments")
 
 }

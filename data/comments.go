@@ -1,12 +1,15 @@
 package data
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"time"
 
 	"github.com/go-playground/validator"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // Comment defines the structure for an API comment
@@ -38,7 +41,30 @@ func (c *Comments) ToJSON(w io.Writer) error {
 }
 
 func GetComments() Comments {
-	return commentList
+	var results []*Comment
+
+	cur, err := Collection.Find(context.TODO(), bson.D{{}})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for cur.Next(context.TODO()) {
+		var cmnt Comment
+		err := cur.Decode(&cmnt)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		results = append(results, &cmnt)
+	}
+
+	if err := cur.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	cur.Close(context.TODO())
+
+	return results
 }
 
 var ErrCommentNotFound = fmt.Errorf("Comment not found.")
@@ -55,12 +81,19 @@ func findComment(id int) (*Comment, int, error) {
 
 func AddComment(c *Comment) {
 	c.ID = getNextID()
-	commentList = append(commentList, c)
+	c.CreatedOn = time.Now().UTC().String()
+	_, err := Collection.InsertOne(context.TODO(), c)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func getNextID() int {
-	cl := commentList[len(commentList)-1]
-	return cl.ID + 1
+	dbSize, err := Collection.CountDocuments(context.TODO(), bson.D{{}})
+	if err != nil {
+		log.Fatal(err)
+	}
+	return (int)(dbSize + 1)
 }
 
 var commentList = []*Comment{
